@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react'
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
+import hero from '../assets/welcome img.png'
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -8,19 +9,21 @@ const Welcome = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate('/login');
-    }, 2000);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
     <div
-      className="relative h-screen w-full bg-opacity-25 bg-cover bg-center flex items-center justify-center">
+      className="relative h-screen w-full bg-opacity-25 bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: `url(${hero})` }}
+    >
       {/* Overlay */}
       <div className="absolute inset-0 bg-opacity-50 z-0" />
 
       
-      <div className="relative top-50 z-10 flex items-center h-full text-white px-4">
+      <div className="relative top-20 z-10 flex items-center h-full text-white px-4">
         <img
           src={logo}
           alt="STUDYPAL Logo"
