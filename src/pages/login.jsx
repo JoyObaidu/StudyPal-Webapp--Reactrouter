@@ -1,30 +1,47 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
+import {FaApple} from 'react-icons/fa';
+import googleImg from '../assets/icons8-google.svg'; // Assuming you have a Google logo image
 
-const Login = () => {
+
+const Auth = () => {
   const navigate = useNavigate();
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleLogin = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/dashboard');
-  };
 
-  if (email === 'admin@example.com' && password === '123456') {
-      setError('');
-      navigate('/dashboard');
-    } else {
-      setError('Invalid email or password');
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
+      return;
     }
- 
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+
+    setError('');
+
+    if (isSignUp) {
+      // Simulate account creation → go to login
+      setIsSignUp(false);
+      setEmail('');
+      setPassword('');
+    } else {
+      // Simulate login success → go to dashboard
+      navigate('/dashboard');
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 text-black">
-      
       {/* Logo */}
       <div className="flex flex-col items-center mb-8">
         <img src={logo} alt="STUDYPAL Logo" className="w-16 h-16 rounded-full mb-2" />
@@ -32,60 +49,99 @@ const Login = () => {
       </div>
 
       {/* Toggle Buttons */}
-      <div className="flex space-x-4 mb-6">
-        <button className=" text-white px-6 py-2 rounded font-semibold shadow">
-          Login
-        </button>
-        <button className=" text-purple-800 px-6 py-2 rounded font-semibold border border-purple-800">
-          Sign Up
-        </button>
-      </div>
+<div className="flex w-full justify-between mb-6">
+  <button
+    onClick={() => setIsSignUp(false)}
+    className={`px-6 py-2 rounded font-semibold transition border-b-2 ${
+      !isSignUp
+        ? 'border-purple-700 text-purple-700 hover:border-purple-900 bg-transparent hover:bg-transparent'
+        : 'border-transparent text-purple-800 hover:border-purple-500 bg-transparent hover:bg-transparent'
+    }`}
+  >
+    Login
+  </button>
+  <button
+    onClick={() => setIsSignUp(true)}
+    className={`px-6 py-2 rounded font-semibold transition border-b-2 ${
+      isSignUp
+        ? 'border-purple-700 text-purple-700 hover:border-purple-900 bg-transparent hover:bg-transparent'
+        : 'border-transparent text-purple-800 hover:border-purple-500 bg-transparent hover:bg-transparent'
+    }`}
+  >
+    Sign Up
+  </button>
+</div>
 
-      {/* Form */}
-      <form onSubmit={handleLogin} className="p-6 w-full max-w-sm">
-        <label className="flex text-sm font-bold mb-1">Your Email</label>
+
+      {/* Shared Form */}
+      <form onSubmit={handleSubmit} className="p-6 w-full max-w-sm">
+        <label className="flex text-sm font-bold mb-1">Email</label>
         <input
-          type="email"
+          type="text"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border rounded bg-purple-50 focus:ring-2 focus:ring-purple-400"
+          className="w-full mb-4 px-3 py-2 border rounded bg-purple-50 focus:ring-2 focus:ring-purple-400 hover:border-purple-400"
         />
 
-        <label className="flex text-sm font-bold mb-1">Your Password</label>
+        <label className="flex text-sm font-bold mb-1">Password</label>
         <input
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-2 px-3 py-2 border rounded bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="w-full mb-2 px-3 py-2 border rounded bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400 hover:border-purple-400"
         />
 
-        <div className="text-right mb-4">
-          <a href="#" className="text-xs text-purple-600 hover:underline">Forgot Password?</a>
-        </div>
         {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-        <button className="w-full bg-purple-800 text-white py-2 rounded font-semibold hover:bg-purple-700 mb-4">
-          Continue
+
+        <button
+          type="submit"
+          className="mt-3 w-full bg-purple-800 text-white py-2 rounded font-semibold hover:bg-purple-700 transition mb-4"
+        >
+          {isSignUp ? 'Create Account' : 'Continue'}
         </button>
 
-        <div className="text-center text-sm text-gray-500 mb-4">or</div>
+        {/* Sign up options */}
+        {isSignUp && (
+          <>
+            <button type="button" className="mt-5 flex w-full items-center justify-center bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
+              <FaApple className="mr-2 text-black" />Sign Up with Apple
+            </button>
+            <button type="button" className="flex w-full items-center justify-center bg-white text-black border py-2 rounded hover:bg-gray-100 transition">
+              <img src={googleImg} alt="google logo" className="w-5 h-5 mr-2" />Sign Up with Google
+            </button>
+          </>
+        )}
 
-        <button className="w-full bg-white text-black py-2 rounded mb-3">
-          Log in with Apple
-        </button>
-        <button className="w-full bg-white text-black border py-2 rounded">
-          Log in with Google
-        </button>
+        {/* Login extra options */}
+        {!isSignUp && (
+          <>
+            <div className="text-right mb-4">
+              <a href="#" className="text-xs text-purple-600 hover:underline transition">Forgot Password?</a>
+            </div>
+            <div className="text-center text-sm text-gray-500 mb-4">or <hr /></div>
+            <button type="button" className="flex w-full items-center justify-center w-full bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
+              <FaApple className="mr-2 text-black" />Log in with Apple
+            </button>
+            <button type="button" className=" flex w-full items-center justify-center w-full bg-white text-black border py-2 rounded hover:bg-gray-100 transition">
+              <img src={googleImg} alt="google logo" className="w-5 h-5 mr-2" />Log in with Google
+            </button>
+          </>
+        )}
       </form>
 
-      {/* Sign Up Prompt */}
       <p className="mt-6 text-sm">
-        Don't have an account?{' '}
-        <a href="#" className="text-purple-600 font-semibold hover:underline">Sign Up</a>
+        {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+        <button
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="text-purple-600 font-semibold hover:underline transition"
+        >
+          {isSignUp ? 'Login' : 'Sign Up'}
+        </button>
       </p>
     </div>
   );
 };
 
-
-
-export default Login;
+export default Auth;
