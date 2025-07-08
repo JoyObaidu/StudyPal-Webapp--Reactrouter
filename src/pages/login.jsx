@@ -41,18 +41,18 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 text-black">
+    <div className="h-screen flex flex-col items-center px-4 text-black">
       {/* Logo */}
-      <div className="flex flex-col items-center mb-8">
-        <img src={logo} alt="STUDYPAL Logo" className="w-16 h-16 rounded-full mb-2" />
-        <h2 className="text-2xl font-bold text-purple-800">STUDYPAL</h2>
+      <div className="flex flex-col items-center mb-2">
+        <img src={logo} alt="STUDYPAL Logo" className="w-14 h-14 rounded-full mb-2" />
+        <h3 className="text-xl font-bold text-purple-800">STUDYPAL</h3>
       </div>
 
       {/* Toggle Buttons */}
-<div className="flex w-full justify-between mb-6">
+<div className="flex relative w-full justify-between mb-4">
   <button
     onClick={() => setIsSignUp(false)}
-    className={`px-6 py-2 rounded font-semibold transition border-b-2 ${
+    className={`px-4 cursor-pointer py-2 rounded font-semibold transition border-b-2 ${
       !isSignUp
         ? 'border-purple-700 text-purple-700 hover:border-purple-900 bg-transparent hover:bg-transparent'
         : 'border-transparent text-purple-800 hover:border-purple-500 bg-transparent hover:bg-transparent'
@@ -62,7 +62,7 @@ const Auth = () => {
   </button>
   <button
     onClick={() => setIsSignUp(true)}
-    className={`px-6 py-2 rounded font-semibold transition border-b-2 ${
+    className={`px-6 py-2 rounded font-semibold transition border-b-2 cursor-pointer ${
       isSignUp
         ? 'border-purple-700 text-purple-700 hover:border-purple-900 bg-transparent hover:bg-transparent'
         : 'border-transparent text-purple-800 hover:border-purple-500 bg-transparent hover:bg-transparent'
@@ -81,7 +81,7 @@ const Auth = () => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border rounded bg-purple-50 focus:ring-2 focus:ring-purple-400 hover:border-purple-400"
+          className="w-full cursor-pointer mb-2 px-3 py-2 border rounded bg-purple-50 focus:ring-2 focus:ring-purple-400 hover:border-purple-400"
         />
 
         <label className="flex text-sm font-bold mb-1">Password</label>
@@ -90,14 +90,14 @@ const Auth = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-2 px-3 py-2 border rounded bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400 hover:border-purple-400"
+          className="w-full cursor-pointer mb-2 px-3 py-2 border rounded bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400 hover:border-purple-400"
         />
 
         {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
         <button
           type="submit"
-          className="mt-3 w-full bg-purple-800 text-white py-2 rounded font-semibold hover:bg-purple-700 transition mb-4"
+          className="mt-3 w-full cursor-pointer bg-purple-800 text-white py-2 rounded font-semibold hover:bg-purple-700 transition mb-4"
         >
           {isSignUp ? 'Create Account' : 'Continue'}
         </button>
@@ -105,10 +105,10 @@ const Auth = () => {
         {/* Sign up options */}
         {isSignUp && (
           <>
-            <button type="button" className="mt-5 flex w-full items-center justify-center bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
+            <button type="button" className="cursor-pointer mt-5 flex w-full items-center justify-center bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
               <FaApple className="mr-2 text-black" />Sign Up with Apple
             </button>
-            <button type="button" className="flex w-full items-center justify-center bg-white text-black border py-2 rounded hover:bg-gray-100 transition">
+            <button type="button" className="cursor-pointer flex w-full items-center justify-center bg-white text-black border py-2 rounded hover:bg-gray-100 transition">
               <img src={googleImg} alt="google logo" className="w-5 h-5 mr-2" />Sign Up with Google
             </button>
           </>
@@ -117,11 +117,11 @@ const Auth = () => {
         {/* Login extra options */}
         {!isSignUp && (
           <>
-            <div className="text-right mb-4">
-              <a href="#" className="text-xs text-purple-600 hover:underline transition">Forgot Password?</a>
+            <div className="text-right mb-2">
+              <a href="#" className="text-xs cursor-pointer text-purple-600 hover:underline transition">Forgot Password?</a>
             </div>
             <div className="text-center text-sm text-gray-500 mb-4">or <hr /></div>
-            <button type="button" className="flex w-full items-center justify-center w-full bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
+            <button type="button" className="flex cursor-pointer w-full items-center justify-center w-full bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
               <FaApple className="mr-2 text-black" />Log in with Apple
             </button>
             <button type="button" className=" flex w-full items-center justify-center w-full bg-white text-black border py-2 rounded hover:bg-gray-100 transition">
@@ -135,7 +135,7 @@ const Auth = () => {
         {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
         <button
           onClick={() => setIsSignUp(!isSignUp)}
-          className="text-purple-600 font-semibold hover:underline transition"
+          className="text-purple-600 cursor-pointer font-semibold hover:underline transition"
         >
           {isSignUp ? 'Login' : 'Sign Up'}
         </button>
