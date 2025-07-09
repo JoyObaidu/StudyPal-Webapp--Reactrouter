@@ -20,6 +20,8 @@ export default function App() {
         <Route path='/notes' element={<Notes/>} />
         <Route path="/editor" element={<Editor />} />
         <Route path="/pomodoro" element={<Pomodoro />} />
+        <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
