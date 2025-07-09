@@ -5,7 +5,7 @@ import {FaApple} from 'react-icons/fa';
 import googleImg from '../assets/icons8-google.svg'; // Assuming you have a Google logo image
 
 
-const Auth = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
@@ -144,4 +144,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default Login;
