@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState} from 'react';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 import {FaApple} from 'react-icons/fa';
@@ -49,28 +49,28 @@ const Login = () => {
       </div>
 
       {/* Toggle Buttons */}
-<div className="flex relative w-full justify-between mb-4">
-  <button
-    onClick={() => setIsSignUp(false)}
-    className={`px-4 cursor-pointer py-2 rounded font-semibold transition border-b-2 ${
-      !isSignUp
+      <div className="flex relative w-full justify-between mb-4">
+        <button
+         onClick={() => setIsSignUp(false)}
+          className={`px-4 cursor-pointer py-2 rounded font-semibold transition border-b-2 ${
+         !isSignUp
         ? 'border-purple-700 text-purple-700 hover:border-purple-900 bg-transparent hover:bg-transparent'
         : 'border-transparent text-purple-800 hover:border-purple-500 bg-transparent hover:bg-transparent'
-    }`}
-  >
-    Login
-  </button>
-  <button
-    onClick={() => setIsSignUp(true)}
-    className={`px-6 py-2 rounded font-semibold transition border-b-2 cursor-pointer ${
-      isSignUp
+       }`}
+         >
+          Login
+        </button>
+        <button
+         onClick={() => setIsSignUp(true)}
+         className={`px-6 py-2 rounded font-semibold transition border-b-2 cursor-pointer ${
+          isSignUp
         ? 'border-purple-700 text-purple-700 hover:border-purple-900 bg-transparent hover:bg-transparent'
         : 'border-transparent text-purple-800 hover:border-purple-500 bg-transparent hover:bg-transparent'
-    }`}
-  >
-    Sign Up
-  </button>
-</div>
+          }`}
+            >
+       Sign Up
+         </button>
+             </div>
 
 
       {/* Shared Form */}
