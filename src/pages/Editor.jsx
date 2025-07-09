@@ -9,7 +9,7 @@ const Editor = () => {
         placeholder="Start writing here..."
       ></textarea>
       <button className="mt-4 bg-white shadow-xl rounded-md text-purple-700 px-6 py-2 font-bold hover:bg-purple-700">
-        Save Note
+        Save Note Now
       </button>
       <Button />
     </div>
