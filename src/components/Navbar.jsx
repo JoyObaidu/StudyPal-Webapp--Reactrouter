@@ -1,30 +1,34 @@
-import React from 'react'
+import React from 'react';
+import { FaHome, FaStickyNote, FaClock, FaUser } from 'react-icons/fa';
+import { Link, useLocation } from 'react-router-dom';
 
-const Navbar = () => {
+const BottomNav = () => {
+  const location = useLocation();
+
+  const navItems = [
+    { path: '/dashboard', icon: <FaHome />, label: 'Home' },
+    { path: '/notes', icon: <FaStickyNote />, label: 'Notes' },
+    { path: '/timer', icon: <FaClock />, label: 'Timer' },
+    { path: '/profile', icon: <FaUser />, label: 'Profile' },
+  ];
+
   return (
-    <nav className="bg-purple-600 p-4">
-      <ul className="flex space-x-4">
-        <li>
-          <Link to="/" className="text-white hover:underline">Home</Link>
-        </li>
-        <li>
-          <Link to="/login" className="text-white hover:underline">Login</Link>
-        </li>
-        <li>
-          <Link to="/dashboard" className="text-white hover:underline">Dashboard</Link>
-        </li>
-        <li>
-          <Link to="/editor" className="text-white hover:underline">Editor</Link>
-        </li>
-        <li>
-          <Link to="/pomodoro" className="text-white hover:underline">Pomodoro</Link>
-        </li>
-        <li>
-          <Link to="/profile" className="text-white hover:underline">Profile</Link>
-        </li>
-      </ul>
+    <nav className="fixed bottom-0 left-0 right-0 bg-purple-500 shadow-lg">
+      <div className="flex justify-around items-center py-2">
+        {navItems.map((item) => {
+          const active = location.pathname === item.path;
+          return (
+            <Link key={item.path} to={item.path} className="flex flex-col items-center text-white hover:text-purple-100">
+              <div className={`${active ? 'text-yellow-300' : ''} text-xl`}>
+                {item.icon}
+              </div>
+              <span className="text-xs">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default BottomNav;

@@ -121,10 +121,10 @@ const Auth = () => {
               <a href="#" className="text-xs cursor-pointer text-purple-600 hover:underline transition">Forgot Password?</a>
             </div>
             <div className="text-center text-sm text-gray-500 mb-4">or <hr /></div>
-            <button type="button" className="flex cursor-pointer w-full items-center justify-center w-full bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
+            <button type="button" className="flex cursor-pointer items-center justify-center w-full bg-white text-black py-2 rounded mb-3 border hover:bg-gray-100 transition">
               <FaApple className="mr-2 text-black" />Log in with Apple
             </button>
-            <button type="button" className=" flex w-full items-center justify-center w-full bg-white text-black border py-2 rounded hover:bg-gray-100 transition">
+            <button type="button" className=" flex w-full items-center justify-center bg-white text-black border py-2 rounded hover:bg-gray-100 transition">
               <img src={googleImg} alt="google logo" className="w-5 h-5 mr-2" />Log in with Google
             </button>
           </>
