@@ -1,13 +1,18 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { FaArrowCircleLeft } from 'react-icons/fa'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowCircleLeft } from 'react-icons/fa';
 
 const Button = () => {
+  const navigate = useNavigate();
+
   return (
-    <Link to="/dashboard" className="absolute top-4 left-4 text-purple-500">
-       <FaArrowCircleLeft className="text-2xl" />
-      </Link>
-  )
+    <button
+      onClick={() => navigate(-1)}
+      className="absolute top-4 left-4 text-purple-500"
+    >
+      <FaArrowCircleLeft className="text-2xl" />
+    </button>
+  );
 }
 
-export default Button
+export default Button;

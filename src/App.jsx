@@ -9,6 +9,8 @@ import Notes from './pages/Notes';
 import Chatbot from './pages/Chatbot';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import EditProfile from './pages/EditProfile';
+import ChangePassword from './pages/ChangePassword';
 
 export default function App() {
   return (
@@ -23,6 +25,9 @@ export default function App() {
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/editprofile" element={<EditProfile />} />
+<Route path="/changepassword" element={<ChangePassword />} />
+
       </Routes>
     </BrowserRouter>
   );

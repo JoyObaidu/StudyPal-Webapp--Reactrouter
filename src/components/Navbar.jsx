@@ -8,7 +8,7 @@ const BottomNav = () => {
   const navItems = [
     { path: '/dashboard', icon: <FaHome />, label: 'Home' },
     { path: '/notes', icon: <FaStickyNote />, label: 'Notes' },
-    { path: '/timer', icon: <FaClock />, label: 'Timer' },
+    { path: '/pomodoro', icon: <FaClock />, label: 'Pomodoro' },
     { path: '/profile', icon: <FaUser />, label: 'Profile' },
   ];
 

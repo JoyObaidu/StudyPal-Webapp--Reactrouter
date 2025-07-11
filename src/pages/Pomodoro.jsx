@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-
+import BottomNav from '../components/Navbar';
+import Button from '../components/Button';
 
 const Pomodoro = () => {
   const [secondsLeft, setSecondsLeft] = useState(1500); // 25 mins
@@ -19,14 +20,19 @@ const Pomodoro = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-primary text-white">
+      <Button />
+      
+      {/* Header */}
       <h1 className="text-4xl font-bold mb-4">Pomodoro Timer</h1>
       <div className="text-6xl font-mono mb-6">{minutes}:{seconds}</div>
       <button
         onClick={() => setActive(!active)}
-        className="bg-white text-primary px-6 py-2 rounded font-bold hover:bg-gray-200"
+        className="bg-white text-purple-800 px-6 py-2 rounded font-bold hover:bg-gray-200"
       >
         {active ? 'Pause' : 'Start'}
       </button>
+
+      <BottomNav />
     </div>
   )
 }
