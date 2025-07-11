@@ -46,7 +46,7 @@ const ChangePassword = () => {
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="w-full border rounded px-3 py-2 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="w-full border text-purple-700 rounded px-3 py-2 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
             required
           />
         </div>
@@ -57,7 +57,7 @@ const ChangePassword = () => {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full border rounded px-3 py-2 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="w-full border text-purple-700 rounded px-3 py-2 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
             required
           />
         </div>
@@ -68,14 +68,14 @@ const ChangePassword = () => {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full border rounded px-3 py-2 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="w-full border rounded px-3 py-2 text-purple-700 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-purple-800 text-white py-2 rounded-md font-semibold hover:bg-purple-700 transition"
+          className="w-full bg-purple-800 text-purple-300 py-2 rounded-md font-semibold hover:bg-purple-700 transition"
         >
           Change Password
         </button>

@@ -36,7 +36,7 @@ const EditProfile = () => {
             <label className="block text-purple-800 font-semibold mb-1">Name</label>
             <input
               type="text"
-              className="w-full p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full text-purple-300 p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -46,7 +46,7 @@ const EditProfile = () => {
             <label className="block text-purple-800 font-semibold mb-1">Email</label>
             <input
               type="email"
-              className="w-full p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full text-purple-300 p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -55,7 +55,7 @@ const EditProfile = () => {
           <div>
             <label className="block text-purple-800 font-semibold mb-1">Bio</label>
             <textarea
-              className="w-full p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full text-shadow-purple-800 p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
               rows="3"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
