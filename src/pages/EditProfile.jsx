@@ -13,62 +13,62 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-purple-100 pb-20 flex flex-col items-center">
-      
-      {/* Header */}
-      <div className="w-full flex items-center justify-between px-4 py-4 bg-purple-800 text-white">
-        <h1 className="text-xl font-bold">Edit Profile</h1>
-        <Button />
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-200 pb-24 flex flex-col items-center px-4">
+      {/* Back Button */}
+      <Button />
 
-      {/* Avatar Placeholder */}
-      <div className="flex flex-col items-center mt-8">
-        <div className="w-24 h-24 rounded-full bg-purple-300 flex items-center justify-center text-purple-800 text-4xl font-bold">
+      {/* Header */}
+      <h1 className="text-3xl font-bold text-purple-800 mt-8 mb-4">Edit Profile</h1>
+
+      {/* Profile Card */}
+      <div className="w-full max-w-md p-6 flex flex-col items-center">
+        {/* Avatar Placeholder */}
+        <div className="w-28 h-28 rounded-full bg-purple-200 flex items-center justify-center text-purple-800 text-4xl font-bold shadow border-4 border-purple-300 mb-2">
           U
         </div>
-        <button className="mt-2 text-purple-600 text-sm hover:underline">
+        <button className="text-purple-600 text-sm hover:underline mb-4">
           Change Photo
         </button>
-      </div>
 
-      {/* Form */}
-      <div className="mt-8 w-full max-w-md px-4 space-y-4">
-        <div>
-          <label className="block text-purple-800 font-semibold mb-1">Name</label>
-          <input
-            type="text"
-            className="w-full p-3 rounded border border-purple-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+        {/* Form */}
+        <div className="w-full space-y-4">
+          <div>
+            <label className="block text-purple-800 font-semibold mb-1">Name</label>
+            <input
+              type="text"
+              className="w-full p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-purple-800 font-semibold mb-1">Email</label>
+            <input
+              type="email"
+              className="w-full p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-purple-800 font-semibold mb-1">Bio</label>
+            <textarea
+              className="w-full p-3 rounded-lg border border-purple-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              rows="3"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+            ></textarea>
+          </div>
+
+          <button
+            onClick={handleSave}
+            className="w-full mt-2 bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg font-semibold shadow transition"
+          >
+            Save Changes
+          </button>
         </div>
-
-        <div>
-          <label className="block text-purple-800 font-semibold mb-1">Email</label>
-          <input
-            type="email"
-            className="w-full p-3 rounded border border-purple-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="block text-purple-800 font-semibold mb-1">Bio</label>
-          <textarea
-            className="w-full p-3 rounded border border-purple-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-            rows="4"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-          ></textarea>
-        </div>
-
-        <button
-          onClick={handleSave}
-          className="w-full mt-4 bg-purple-800 text-white py-3 rounded font-semibold hover:bg-purple-700 transition"
-        >
-          Save Changes
-        </button>
       </div>
     </div>
   );

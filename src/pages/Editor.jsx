@@ -1,6 +1,6 @@
-import React from 'react'
-import Button from '../components/Button'
-import { useNavigate } from 'react-router-dom'
+import React from 'react';
+import Button from '../components/Button';
+import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/Navbar';
 
 const Editor = () => {
@@ -15,8 +15,16 @@ const Editor = () => {
   });
 
   const handleSave = () => {
+    if (noteContent.trim() === '') {
+      alert('Please write something before saving!');
+      return;
+    }
+
     if (typeof window !== 'undefined') {
-      const updatedNotes = [...existingNotes, { id: Date.now(), content: noteContent }];
+      const updatedNotes = [
+        ...existingNotes,
+        { id: Date.now(), content: noteContent },
+      ];
       window.localStorage.setItem('notes', JSON.stringify(updatedNotes));
       setExistingNotes(updatedNotes);
       navigate('/notes');
@@ -24,24 +32,30 @@ const Editor = () => {
   };
 
   return (
-    <div className="p-10 bg-purple-300 min-h-screen">
-      <h1 className="text-xl font-bold text-purple-800 mb-4">New Note</h1>
-      <textarea
-        className="w-full h-96 p-4 rounded border text-black focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-        placeholder="Start writing here..."
-        value={noteContent}
-        onChange={(e) => setNoteContent(e.target.value)}
-      ></textarea>
-      <button
-      onClick={handleSave}
-      className="mt-4 bg-white shadow-xl rounded-md text-purple-700 px-6 py-2 font-bold hover:bg-purple-700">
-        Save Note Now
-      </button>
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-200 flex flex-col items-center p-8">
       <Button />
+
+      <div className="w-full max-w-2xl bg-white shadow-xl border border-purple-200 rounded-xl mt-10 p-6">
+        <h1 className="text-2xl font-bold text-purple-800 mb-4">New Note</h1>
+
+        <textarea
+          className="w-full min-h-[300px] p-4 rounded-lg border border-purple-300 text-purple-950 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none shadow-sm mb-4"
+          placeholder="Start writing your thoughts or ideas here..."
+          value={noteContent}
+          onChange={(e) => setNoteContent(e.target.value)}
+        />
+
+        <button
+          onClick={handleSave}
+          className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
+        >
+          Save Note
+        </button>
+      </div>
 
       <BottomNav />
     </div>
-  )
-}
+  );
+};
 
-export default Editor
+export default Editor;

@@ -17,47 +17,53 @@ const Notes = () => {
     setSearchQuery(e.target.value);
   };
 
-  // Filter notes to display
+  // Filter notes
   const filteredNotes = allNotes.filter(note =>
-  note?.content?.toLowerCase().includes(searchQuery.toLowerCase())
-);
-
+    note?.content?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="p-10 bg-purple-100 min-h-screen flex flex-col items-center">
-      <h1 className="text-xl font-bold mb-4 text-purple-800">My Notes</h1>
-      
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-purple-50 to-purple-200 flex flex-col items-center px-4">
+      <h1 className="text-2xl font-bold mt-6 mb-4 text-purple-800">My Notes</h1>
+
       {/* Search Bar */}
-      <div className='mb-4 border border-gray-300 flex gap-2 items-center rounded w-full'>
-        <FaSearch className="text-gray-500 ml-2" />
+      <div className="mb-6 w-full max-w-md flex items-center bg-white border border-purple-300 rounded-lg shadow-sm overflow-hidden">
+        <div className="px-3 text-purple-500">
+          <FaSearch />
+        </div>
         <input
           type="text"
           value={searchQuery}
           onChange={handleSearch}
           placeholder="Search notes..."
-          className="p-2 text-black w-full"
+          className="flex-1 p-2 text-purple-800 focus:outline-none"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 w-full">
+      {/* Notes Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mb-6">
         {filteredNotes.length === 0 && (
-          <p className="text-gray-500">No notes found.</p>
+          <p className="text-purple-500 text-center w-full">No notes found.</p>
         )}
         {filteredNotes.map(note => (
-          <div key={note.id} className="p-4 bg-white rounded shadow hover:shadow-md">
-            <h2 className="font-semibold text-lg text-black mb-2">Note</h2>
-            <p className="text-sm text-gray-600">{note.content.slice(0, 100)}...</p>
+          <div
+            key={note.id}
+            className="p-4 bg-white border border-purple-200 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
+          >
+            <h2 className="font-semibold text-lg text-purple-800 mb-2">Note</h2>
+            <p className="text-sm text-purple-700">{note.content.slice(0, 100)}...</p>
           </div>
         ))}
       </div>
 
+      {/* Add Note Button (INLINE instead of Floating) */}
       <Link
         to="/editor"
-        className="fixed bottom-20 right-6 bg-purple-950 text-white rounded-full w-12 h-12 flex items-center justify-center text-3xl shadow-lg hover:bg-purple-800 transition"
+        className="w-16 max-w-md text-center bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-4xl shadow transition"
       >
-        +
+        + 
       </Link>
-      
+
       <Button />
       <BottomNav />
     </div>

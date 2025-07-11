@@ -36,7 +36,7 @@ const ChangePassword = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white shadow rounded-lg p-6 space-y-4"
+        className="w-full max-w-md p-6 space-y-4"
       >
         {message && <div className="text-center text-sm text-red-500">{message}</div>}
 
@@ -75,7 +75,7 @@ const ChangePassword = () => {
 
         <button
           type="submit"
-          className="w-full bg-purple-800 text-white py-2 rounded font-semibold hover:bg-purple-700 transition"
+          className="w-full bg-purple-800 text-white py-2 rounded-md font-semibold hover:bg-purple-700 transition"
         >
           Change Password
         </button>
