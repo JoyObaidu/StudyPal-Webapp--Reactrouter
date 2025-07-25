@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaBookOpen, FaClock, FaUser } from 'react-icons/fa';
+import { FaBookOpen, FaClock, FaUser, FaRobot } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../assets/logo.png';
 
@@ -11,6 +11,7 @@ const BottomNav = () => {
     { path: '/notes', type: 'icon', icon: FaBookOpen, label: 'Notes' },
     { path: '/pomodoro', type: 'icon', icon: FaClock, label: 'Pomodoro' },
     { path: '/profile', type: 'icon', icon: FaUser, label: 'Profile' },
+    { path: '/chatbot', type: 'icon', icon: FaRobot, label: 'Chatbot' },
   ];
 
   return (

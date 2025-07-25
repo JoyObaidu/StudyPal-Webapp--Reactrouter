@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 import Welcome from './pages/Welcome';
-import Login from './pages/SignUp';
+import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import Editor from './pages/Editor';
 import Pomodoro from './pages/Pomodoro';
@@ -17,7 +17,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Welcome />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path='/notes' element={<Notes/>} />
         <Route path="/editor" element={<Editor />} />
@@ -26,7 +26,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/editprofile" element={<EditProfile />} />
-<Route path="/changepassword" element={<ChangePassword />} />
+        <Route path="/changepassword" element={<ChangePassword />} />
 
       </Routes>
     </BrowserRouter>
