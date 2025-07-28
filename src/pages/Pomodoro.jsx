@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import BottomNav from '../components/Navbar';
 import Button from '../components/Button';
+import headerImage from '../assets/POMODORO _ Okamoto Issen Graphic Design Co_,Ltd_ 1.png';
+import { Link } from 'react-router-dom';
 
 const Pomodoro = () => {
   const [secondsLeft, setSecondsLeft] = useState(1500); // 25 minutes
@@ -40,7 +42,7 @@ const Pomodoro = () => {
       <Button />
 
       {/* Header */}
-      <h1 className="text-3xl font-bold text-purple-800 mt-8 mb-6">Pomodoro Timer</h1>
+     <img src={headerImage} alt="Pomodoro Timer" />
 
       {/* Timer Display */}
       <div className="text-7xl font-mono text-purple-900 mb-8 rounded-lg px-8 py-6 bg-white shadow-lg border border-purple-300">

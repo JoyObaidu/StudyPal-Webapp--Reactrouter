@@ -8,7 +8,7 @@ const Welcome = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/signup');
+      navigate('./SignUp');
     }, 5000);
 
     return () => clearTimeout(timer);

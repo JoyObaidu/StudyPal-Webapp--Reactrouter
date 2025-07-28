@@ -26,7 +26,7 @@ const BottomNav = () => {
               to={item.path}
               className="flex flex-col items-center text-white hover:text-purple-100"
             >
-              <div className={`${active ? 'text-yellow-300' : ''} text-xl`}>
+              <div className={`${active ? 'text-purple-300' : ''} text-xl`}>
                 {item.type === 'image' ? (
                   <img src={item.icon} alt={item.label} className="w-6 h-6" />
                 ) : (

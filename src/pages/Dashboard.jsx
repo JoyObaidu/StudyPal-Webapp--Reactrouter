@@ -5,8 +5,11 @@ import BottomNav from '../components/Navbar'
 import Logo from '../components/Logo'
 import { Link } from 'react-router-dom'
 import Featuredimg from '../assets/featured book img.jpg'
+// import { updateProfile } from 'firebase/auth'
+
 
 const Dashboard = () => {
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-300 via-purple-400 to-purple-500 pb-20 flex flex-col">
       
@@ -14,7 +17,7 @@ const Dashboard = () => {
       <header className="px-4 py-2 flex items-center justify-between shadow-lg">
         <div>
           <h2 className="text-sm text-purple-100">Good Afternoon,</h2>
-          <h1 className="text-xl font-bold text-white">User</h1>
+          <h1 className="text-xl font-bold text-white">Name</h1>
         </div>
         <Logo />
       </header>
@@ -24,7 +27,7 @@ const Dashboard = () => {
         <section className="grid grid-cols-2 gap-4 mt-4">
           <DashboardCard 
             icon={<FaBookOpen className="text-2xl text-purple-800" />} 
-            label="Notes" 
+            label="Study Notes" 
             to="/notes" 
             className="backdrop-blur-md bg-white/30 border border-white/20 hover:bg-white/40 transition rounded-xl shadow" 
           />
@@ -36,7 +39,7 @@ const Dashboard = () => {
           />
           <DashboardCard 
             icon={<FaClock className="text-2xl text-purple-800" />} 
-            label="Timer" 
+            label="Pomodoro Timer" 
             to="/pomodoro" 
             className="backdrop-blur-md bg-white/30 border border-white/20 hover:bg-white/40 transition rounded-xl shadow" 
           />
