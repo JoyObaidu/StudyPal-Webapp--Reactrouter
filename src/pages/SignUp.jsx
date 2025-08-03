@@ -37,17 +37,23 @@ const SignUp = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-      console.log('User signed in with Google!');
-      navigate('/dashboard');
-    } catch (error) {
-  console.error('Auth Error Code:', error.code);
-  console.error('Auth Error Message:', error.message);
-  alert(error.message);
-}
+  try {
+    // Create a fresh GoogleAuthProvider so we can set parameters
+    const provider = googleProvider;
+    provider.setCustomParameters({
+      prompt: 'select_account' // Always show account chooser
+    });
 
-  };
+    await signInWithPopup(auth, provider);
+    console.log('User signed in with Google!');
+    navigate('/dashboard');
+  } catch (error) {
+    console.error('Auth Error Code:', error.code);
+    console.error('Auth Error Message:', error.message);
+    alert(error.message);
+  }
+};
+
 
   return (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-300 via-purple-400 to-purple-500 px-4">
