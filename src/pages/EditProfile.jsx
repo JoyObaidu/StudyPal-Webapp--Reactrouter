@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../components/Button';
-import { auth, storage, db } from '../firebaseConfig';
+import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
 import { updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, db } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 
 const EditProfile = () => {
@@ -42,9 +42,9 @@ const EditProfile = () => {
     fetchUserProfile();
   }, []);
 
-  // Upload image to Firebase
+  // Upload image to Cloudinary
   const handlePhotoChange = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const user = auth.currentUser;
@@ -56,30 +56,22 @@ const EditProfile = () => {
     try {
       setUploading(true);
 
-      // Upload to Firebase Storage
-      const storageRef = ref(storage, `profileImages/${user.uid}`);
-      await uploadBytes(storageRef, file);
-      const photoURL = await getDownloadURL(storageRef);
+      // 1) Upload to Cloudinary
+      const photoURL = await uploadImageToCloudinary(file);
 
-      // Update Auth Profile
+      // 2) Update Firebase Auth profile
       await updateProfile(user, { photoURL });
-      await user.reload();
 
-      // Save to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        bio: bio,
-        photoURL: photoURL,
-        name: name,
-        email: email
-      }, { merge: true });
+      // 3) Save to Firestore
+      await setDoc(doc(db, 'users', user.uid), { photoURL }, { merge: true });
 
-      // Update UI instantly
+      // 4) Update UI/cache
       setUserProfile((prev) => ({ ...prev, photoURL }));
       localStorage.setItem('userProfileImage', photoURL);
 
       alert('Profile photo updated!');
-    } catch (error) {
-      console.error('Error updating photo:', error);
+    } catch (err) {
+      console.error('Error updating photo:', err);
       alert('Failed to update photo. Please try again.');
     } finally {
       setUploading(false);
@@ -90,17 +82,17 @@ const EditProfile = () => {
   const handleUpdate = async () => {
     const user = auth.currentUser;
     if (!user) {
-      alert("Please log in to update your profile.");
+      alert('Please log in to update your profile.');
       return;
     }
 
     try {
       await updateProfile(user, { displayName: name });
       await setDoc(doc(db, 'users', user.uid), {
-        bio: bio,
-        name: name,
-        email: email,
-        photoURL: user.photoURL
+        bio,
+        name,
+        email,
+        photoURL: user.photoURL,
       }, { merge: true });
 
       alert('Profile updated!');
@@ -120,7 +112,8 @@ const EditProfile = () => {
         {/* Avatar */}
         <div className="w-28 h-28 rounded-full overflow-hidden shadow border-4 border-purple-300 mb-2">
           <img
-            src={userProfile.photoURL || 'https://via.placeholder.com/150'}
+            src={userProfile.photoURL || '/default-avatar.png'}
+            onError={(e) => (e.currentTarget.src = '/default-avatar.png')}
             alt="User"
             className="w-full h-full object-cover"
           />
@@ -171,7 +164,7 @@ const EditProfile = () => {
 
           <button
             onClick={handleUpdate}
-            className="w-full mt-2 bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg font-semibold"
+            className="w-full mt-2 cursor-pointer bg-purple-700 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold"
           >
             Save Changes
           </button>

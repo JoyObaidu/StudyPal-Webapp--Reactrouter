@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import BottomNav from '../components/Navbar';
 import Button from '../components/Button';
 import { FaArrowRight, FaUser, FaLock } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { auth, storage } from '../firebaseConfig';
+import { Link, useNavigate } from 'react-router-dom';
+import { auth, db } from '../firebaseConfig';
 import { signOut, updateProfile } from 'firebase/auth';
-import { Link } from 'react-router-dom';
-import { db } from '../firebaseConfig';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -16,109 +14,80 @@ const Profile = () => {
   const [userPhoto, setUserPhoto] = useState('');
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
-  // Removed unused user state
   const [isNewUser, setIsNewUser] = useState(true);
   const [showUploadControls, setShowUploadControls] = useState(false);
 
-  // Load auth user + profile info
   useEffect(() => {
-  // Load cached photo for faster UI
-  const cachedPhoto = localStorage.getItem('userProfileImage');
-  if (cachedPhoto) setUserPhoto(cachedPhoto);
+    const cachedPhoto = localStorage.getItem('userProfileImage');
+    if (cachedPhoto) setUserPhoto(cachedPhoto);
 
-  const unsubscribe = auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      navigate('/signup');
-      return;
-    }
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        navigate('/signup');
+        return;
+      }
 
-    // Get custom fields from Firestore
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
-    const userData = userDoc.exists() ? userDoc.data() : {};
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.exists() ? userDoc.data() : {};
 
-    // Always use auth photo first (most up-to-date after upload)
-    const latestPhoto = user.photoURL || userData.photoURL || cachedPhoto || '';
-    if (latestPhoto) {
-      setUserPhoto(latestPhoto);
-      localStorage.setItem('userProfileImage', latestPhoto);
-    }
+      const latestPhoto = user.photoURL || userData.photoURL || cachedPhoto || '';
+      if (latestPhoto) {
+        setUserPhoto(latestPhoto);
+        localStorage.setItem('userProfileImage', latestPhoto);
+      }
 
-    // Set other profile data
-    setUserProfile({
-      name: user.displayName || '',
-      email: user.email || '',
-      bio: userData.bio || ''
+      setUserProfile({
+        name: user.displayName || '',
+        email: user.email || '',
+        bio: userData.bio || ''
+      });
+
+      setIsNewUser(!latestPhoto);
     });
 
-    // Determine if this is a new user (no photo yet)
-    setIsNewUser(!latestPhoto);
-  });
+    return () => unsubscribe();
+  }, [navigate]);
 
-  return () => unsubscribe();
-}, [navigate]);
-
-
-
-  // Handle file input change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setUserPhoto(URL.createObjectURL(file)); // Preview
+      setUserPhoto(URL.createObjectURL(file)); // local preview
     }
   };
 
-  // Upload image to Firebase Storage
-  const handleUpload = async () => {
-  if (!image) return;
+  const onSaveImage = async () => {
+    if (!image) return;
 
-  const currentUser = auth.currentUser;
-  if (!currentUser) {
-    alert("You must be logged in to upload an image.");
-    return;
-  }
-
-  try {
-    setUploading(true);
-
-    const storageRef = ref(storage, `profileImages/${currentUser.uid}`);
-    await uploadBytes(storageRef, image);
-    const photoURL = await getDownloadURL(storageRef);
-
-    // Update auth profile
-    await updateProfile(currentUser, { photoURL });
-
-    // 🔥 Save photoURL to Firestore
-    await setDoc(doc(db, 'users', currentUser.uid), {
-      photoURL,
-    }, { merge: true });
-
-    // Fetch updated user data from Firestore
-    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-    const userData = userDoc.exists() ? userDoc.data() : {};
-    const photo = userData.photoURL || currentUser.photoURL;
-    if (photo) {
-     // already set from Firestore logic above, so just:
-setShowUploadControls(false);
-alert("Image uploaded and profile updated!");
-
-      setIsNewUser(false);
+    const user = auth.currentUser;
+    if (!user) {
+      alert('You must be logged in to upload an image.');
+      return;
     }
 
-    // Update local state + storage
-    setUserPhoto(photoURL);
-    setIsNewUser(false);
-    localStorage.setItem('userProfileImage', photoURL);
-    setShowUploadControls(false);
-    alert("Image uploaded and profile updated!");
-  } catch (err) {
-    console.error("Upload Error:", err);
-    alert("Upload failed. Try again.");
-  } finally {
-    setUploading(false);
-  }
-};
+    try {
+      setUploading(true);
 
+      // 1) Upload to Cloudinary
+      const photoURL = await uploadImageToCloudinary(image);
+
+      // 2) Update Firebase Auth + Firestore
+      await updateProfile(user, { photoURL });
+      await setDoc(doc(db, 'users', user.uid), { photoURL }, { merge: true });
+
+      // 3) Update UI/cache
+      setUserPhoto(photoURL);
+      localStorage.setItem('userProfileImage', photoURL);
+      setShowUploadControls(false);
+      setIsNewUser(false);
+      alert('Image uploaded and profile updated!');
+    } catch (err) {
+      console.error('Upload Error:', err);
+      alert('Upload failed. Try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -137,36 +106,31 @@ alert("Image uploaded and profile updated!");
       <div className="w-full max-w-md p-6 flex flex-col items-center">
         <div className="w-28 h-28 rounded-full overflow-hidden shadow border-4 border-purple-300 mb-4">
           <img
-            src={userPhoto || 'https://via.placeholder.com/150'}
+            src={userPhoto || userProfile.photoURL || '/default-avatar.png'}
+            onError={(e) => (e.currentTarget.src = '/default-avatar.png')}
             alt="User"
             className="w-full h-full object-cover"
           />
         </div>
 
-        {/* Toggle Upload Controls */}
         <button
           onClick={() => setShowUploadControls(!showUploadControls)}
           className="text-purple-600 mb-4 underline"
         >
-          {showUploadControls
-            ? 'Cancel'
-            : isNewUser
-            ? 'Upload Image'
-            : 'Change Image'}
+          {showUploadControls ? 'Cancel' : isNewUser ? 'Upload Image' : 'Change Image'}
         </button>
 
-        {/* Upload Controls */}
         {showUploadControls && (
           <>
-            <input type="file" onChange={handleImageChange} className="mb-3" />
+            <input type="file" accept="image/*" onChange={handleImageChange} className="mb-3" />
             {image && (
               <button
-        onClick={handleUpload}
-        className="bg-purple-700 text-black px-4 py-2 rounded-lg"
-        disabled={uploading}
-      >
-        {uploading ? 'Uploading...' : 'Save Image'}
-      </button>
+                onClick={onSaveImage}
+                className="bg-purple-700 text-white px-4 py-2 rounded-lg"
+                disabled={uploading}
+              >
+                {uploading ? 'Uploading...' : 'Save Image'}
+              </button>
             )}
           </>
         )}
@@ -178,7 +142,7 @@ alert("Image uploaded and profile updated!");
         <div className="w-full space-y-3">
           <Link
             to="/editprofile"
-            className="flex justify-between w-full text-center hover:bg-purple-800 text-black font-semibold px-4 py-3 rounded-lg shadow transition"
+            className="flex justify-between w-full text-center hover:bg-purple-200 text-black font-semibold px-4 py-3 rounded-lg shadow transition"
           >
             <FaUser className="inline mr-2 text-black" />
             Edit Profile
