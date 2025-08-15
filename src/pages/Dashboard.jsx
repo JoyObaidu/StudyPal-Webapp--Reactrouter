@@ -16,7 +16,7 @@ const Dashboard = () => {
       {/* Header */}
       <header className="px-4 py-2 flex items-center justify-between shadow-lg">
         <div>
-          <h2 className="text-sm text-purple-100">Good Afternoon,</h2>
+          <h2 className="text-sm text-purple-100">Welcome,</h2>
           <h1 className="text-xl font-bold text-white">Name</h1>
         </div>
         <Logo />

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../components/Button';
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
-import { updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
+import { updateEmail, updateProfile } from "firebase/auth";
 
 const EditProfile = () => {
   const [name, setName] = useState('');
@@ -80,28 +80,42 @@ const EditProfile = () => {
 
   // Save changes for name, bio, etc.
   const handleUpdate = async () => {
-    const user = auth.currentUser;
-    if (!user) {
-      alert('Please log in to update your profile.');
-      return;
+  const user = auth.currentUser;
+  if (!user) {
+    alert('Please log in to update your profile.');
+    return;
+  }
+
+  try {
+    // 1) Update Firebase Auth displayName
+    if (name !== user.displayName) {
+      await updateProfile(user, { displayName: name });
     }
 
-    try {
-      await updateProfile(user, { displayName: name });
-      await setDoc(doc(db, 'users', user.uid), {
-        bio,
-        name,
-        email,
-        photoURL: user.photoURL,
-      }, { merge: true });
+    // 2) Update Firebase Auth email if changed
+    if (email !== user.email) {
+      await updateEmail(user, email);
+    }
 
-      alert('Profile updated!');
-      navigate('/profile');
-    } catch (error) {
-      console.error('Error updating profile:', error);
+    // 3) Save to Firestore
+    await setDoc(doc(db, 'users', user.uid), {
+      name,
+      email,
+      bio,
+      photoURL: user.photoURL || '',
+    }, { merge: true });
+
+    alert('Profile updated!');
+    navigate('/profile');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    if (error.code === 'auth/requires-recent-login') {
+      alert('Please log in again to change your email.');
+    } else {
       alert('Error updating profile. Please try again.');
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-200 pb-24 flex flex-col items-center px-4">
