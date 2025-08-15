@@ -22,33 +22,41 @@ const Profile = () => {
 
   // Load auth user + profile info
   useEffect(() => {
-    const cachedPhoto = localStorage.getItem('userProfileImage');
+  // Load cached photo for faster UI
+  const cachedPhoto = localStorage.getItem('userProfileImage');
   if (cachedPhoto) setUserPhoto(cachedPhoto);
 
   const unsubscribe = auth.onAuthStateChanged(async (user) => {
     if (!user) {
       navigate('/signup');
-    } else {
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      const userData = userDoc.exists() ? userDoc.data() : {};
-      setUserProfile({
-  name: user.displayName || '',
-  email: user.email || '',
-  bio: userData.bio || '',
-  photoURL: userData.photoURL || user.photoURL || '',
-});
-
-
-      if (user.photoURL) {
-        setUserPhoto(user.photoURL);
-        localStorage.setItem('userProfileImage', user.photoURL);
-        setIsNewUser(false); // Existing user
-      }
+      return;
     }
+
+    // Get custom fields from Firestore
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const userData = userDoc.exists() ? userDoc.data() : {};
+
+    // Always use auth photo first (most up-to-date after upload)
+    const latestPhoto = user.photoURL || userData.photoURL || cachedPhoto || '';
+    if (latestPhoto) {
+      setUserPhoto(latestPhoto);
+      localStorage.setItem('userProfileImage', latestPhoto);
+    }
+
+    // Set other profile data
+    setUserProfile({
+      name: user.displayName || '',
+      email: user.email || '',
+      bio: userData.bio || ''
+    });
+
+    // Determine if this is a new user (no photo yet)
+    setIsNewUser(!latestPhoto);
   });
 
   return () => unsubscribe();
 }, [navigate]);
+
 
 
   // Handle file input change
