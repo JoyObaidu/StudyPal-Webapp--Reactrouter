@@ -4,8 +4,8 @@ import Button from '../components/Button';
 import { FaArrowRight, FaUser, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
-import { signOut, onAuthStateChanged, updateProfile } from 'firebase/auth';
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { signOut, updateProfile } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
 
 const Profile = () => {
@@ -18,33 +18,30 @@ const Profile = () => {
   const [showUploadControls, setShowUploadControls] = useState(false);
 
   useEffect(() => {
-    let unsubscribeAuth;
-    let unsubscribeFirestore;
-
-    unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
         navigate('/signup');
         return;
       }
 
-      // Real-time Firestore listener for profile updates
-      unsubscribeFirestore = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
-        const data = docSnap.data() || {};
-        const latestPhoto = user.photoURL || data.photoURL || '';
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.exists() ? userDoc.data() : {};
+
+      const latestPhoto = user.photoURL || userData.photoURL || '';
+      if (latestPhoto) {
         setUserPhoto(latestPhoto);
-        setUserProfile({
-          name: user.displayName || data.fullName || '',
-          email: user.email || '',
-          bio: data.bio || ''
-        });
-        setIsNewUser(!latestPhoto);
+      }
+
+      setUserProfile({
+        name: user.displayName || '',
+        email: user.email || '',
+        bio: userData.bio || ''
       });
+
+      setIsNewUser(!latestPhoto);
     });
 
-    return () => {
-      if (unsubscribeAuth) unsubscribeAuth();
-      if (unsubscribeFirestore) unsubscribeFirestore();
-    };
+    return () => unsubscribe();
   }, [navigate]);
 
   const handleImageChange = (e) => {
@@ -70,10 +67,11 @@ const Profile = () => {
       // Upload to Cloudinary
       const photoURL = await uploadImageToCloudinary(image);
 
-      // Update Firebase Auth + Firestore
+      // Update Firebase Auth & Firestore
       await updateProfile(user, { photoURL });
       await setDoc(doc(db, 'users', user.uid), { photoURL }, { merge: true });
 
+      setUserPhoto(photoURL);
       setShowUploadControls(false);
       setIsNewUser(false);
       alert('Image uploaded and profile updated!');

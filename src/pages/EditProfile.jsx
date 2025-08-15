@@ -1,57 +1,59 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/Navbar';
 import { auth, db } from '../firebaseConfig';
-import { updateProfile } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { updateProfile, updateEmail } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const EditProfile = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [bio, setBio] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const loadProfile = async () => {
+    const fetchUserData = async () => {
       const user = auth.currentUser;
       if (!user) return;
 
-      const docSnap = await getDoc(doc(db, 'users', user.uid));
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setFullName(user.displayName || data.fullName || '');
-        setEmail(user.email || '');
-        setBio(data.bio || '');
-      }
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.exists() ? userDoc.data() : {};
+
+      setFullName(user.displayName || '');
+      setEmail(user.email || '');
+      setBio(userData.bio || '');
     };
 
-    loadProfile();
+    fetchUserData();
   }, []);
 
   const handleSave = async () => {
     const user = auth.currentUser;
     if (!user) {
-      alert('You must be logged in.');
+      alert('Not logged in.');
       return;
     }
 
     try {
-      // Update Firebase Auth display name
+      // Update Auth name & email
       await updateProfile(user, { displayName: fullName });
+      if (email !== user.email) {
+        await updateEmail(user, email);
+      }
 
-      // Save extra data in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        fullName,
-        bio
-      }, { merge: true });
+      // Update Firestore with bio
+      await setDoc(doc(db, 'users', user.uid), { bio }, { merge: true });
 
       alert('Profile updated successfully!');
-    } catch (err) {
-      console.error(err);
-      alert('Error updating profile.');
+      navigate('/profile'); // Redirect after saving
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert(error.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-200 text-black flex flex-col justify-between">
       <div className="p-5">
         <h1 className="text-xl font-bold mb-4">Edit Profile</h1>
 
@@ -61,17 +63,17 @@ const EditProfile = () => {
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-white"
+            className="w-full p-2 rounded bg-white border border-gray-300 text-black"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1">Email (change requires re-auth)</label>
+          <label className="block mb-1">Email</label>
           <input
             type="email"
             value={email}
-            disabled
-            className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-gray-400"
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 rounded bg-white border border-gray-300 text-black"
           />
         </div>
 
@@ -80,13 +82,13 @@ const EditProfile = () => {
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-white"
+            className="w-full p-2 rounded bg-white border border-gray-300 text-black"
           />
         </div>
 
         <button
           onClick={handleSave}
-          className="w-full py-2 rounded bg-purple-600 hover:bg-purple-700 font-bold"
+          className="w-full py-2 rounded bg-purple-600 hover:bg-purple-700 text-white font-bold"
         >
           Save Changes
         </button>
