@@ -4,8 +4,8 @@ import Button from '../components/Button';
 import { FaArrowRight, FaUser, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
-import { signOut, updateProfile } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { signOut, onAuthStateChanged, updateProfile } from 'firebase/auth';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
 
 const Profile = () => {
@@ -18,34 +18,33 @@ const Profile = () => {
   const [showUploadControls, setShowUploadControls] = useState(false);
 
   useEffect(() => {
-    const cachedPhoto = localStorage.getItem('userProfileImage');
-    if (cachedPhoto) setUserPhoto(cachedPhoto);
+    let unsubscribeAuth;
+    let unsubscribeFirestore;
 
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (!user) {
         navigate('/signup');
         return;
       }
 
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      const userData = userDoc.exists() ? userDoc.data() : {};
-
-      const latestPhoto = user.photoURL || userData.photoURL || cachedPhoto || '';
-      if (latestPhoto) {
+      // Real-time Firestore listener for profile updates
+      unsubscribeFirestore = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+        const data = docSnap.data() || {};
+        const latestPhoto = user.photoURL || data.photoURL || '';
         setUserPhoto(latestPhoto);
-        localStorage.setItem('userProfileImage', latestPhoto);
-      }
-
-      setUserProfile({
-        name: user.displayName || '',
-        email: user.email || '',
-        bio: userData.bio || ''
+        setUserProfile({
+          name: user.displayName || data.fullName || '',
+          email: user.email || '',
+          bio: data.bio || ''
+        });
+        setIsNewUser(!latestPhoto);
       });
-
-      setIsNewUser(!latestPhoto);
     });
 
-    return () => unsubscribe();
+    return () => {
+      if (unsubscribeAuth) unsubscribeAuth();
+      if (unsubscribeFirestore) unsubscribeFirestore();
+    };
   }, [navigate]);
 
   const handleImageChange = (e) => {
@@ -68,16 +67,13 @@ const Profile = () => {
     try {
       setUploading(true);
 
-      // 1) Upload to Cloudinary
+      // Upload to Cloudinary
       const photoURL = await uploadImageToCloudinary(image);
 
-      // 2) Update Firebase Auth + Firestore
+      // Update Firebase Auth + Firestore
       await updateProfile(user, { photoURL });
       await setDoc(doc(db, 'users', user.uid), { photoURL }, { merge: true });
 
-      // 3) Update UI/cache
-      setUserPhoto(photoURL);
-      localStorage.setItem('userProfileImage', photoURL);
       setShowUploadControls(false);
       setIsNewUser(false);
       alert('Image uploaded and profile updated!');
@@ -106,7 +102,7 @@ const Profile = () => {
       <div className="w-full max-w-md p-6 flex flex-col items-center">
         <div className="w-28 h-28 rounded-full overflow-hidden shadow border-4 border-purple-300 mb-4">
           <img
-            src={userPhoto || userProfile.photoURL || '/default-avatar.png'}
+            src={userPhoto || '/default-avatar.png'}
             onError={(e) => (e.currentTarget.src = '/default-avatar.png')}
             alt="User"
             className="w-full h-full object-cover"
