@@ -5,6 +5,7 @@ import BottomNav from '../components/Navbar';
 
 const Editor = () => {
   const navigate = useNavigate();
+  const [noteTitle, setNoteTitle] = React.useState(''); // New title state
   const [noteContent, setNoteContent] = React.useState('');
   const [existingNotes, setExistingNotes] = React.useState(() => {
     if (typeof window !== 'undefined') {
@@ -15,15 +16,15 @@ const Editor = () => {
   });
 
   const handleSave = () => {
-    if (noteContent.trim() === '') {
-      alert('Please write something before saving!');
+    if (noteTitle.trim() === '' || noteContent.trim() === '') {
+      alert('Please enter a title and content before saving!');
       return;
     }
 
     if (typeof window !== 'undefined') {
       const updatedNotes = [
         ...existingNotes,
-        { id: Date.now(), content: noteContent },
+        { id: Date.now(), title: noteTitle, content: noteContent },
       ];
       window.localStorage.setItem('notes', JSON.stringify(updatedNotes));
       setExistingNotes(updatedNotes);
@@ -38,6 +39,16 @@ const Editor = () => {
       <div className="w-full max-w-2xl bg-white shadow-xl border border-purple-200 rounded-xl mt-10 p-6">
         <h1 className="text-2xl font-bold text-purple-800 mb-4">New Note</h1>
 
+        {/* Title Input */}
+        <input
+          type="text"
+          placeholder="Note Title"
+          value={noteTitle}
+          onChange={(e) => setNoteTitle(e.target.value)}
+          className="w-full p-3 rounded-lg border border-purple-300 text-purple-950 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        />
+
+        {/* Content Input */}
         <textarea
           className="w-full min-h-[300px] p-4 rounded-lg border border-purple-300 text-purple-950 bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none shadow-sm mb-4"
           placeholder="Start writing your thoughts or ideas here..."

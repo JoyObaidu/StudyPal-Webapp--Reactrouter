@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
-import BottomNav from '../components/Navbar'
-import Button from '../components/Button'
+import React, { useEffect, useState } from 'react';
+import { FaSearch, FaTrash } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import BottomNav from '../components/Navbar';
+import Button from '../components/Button';
 
 const Notes = () => {
   const [allNotes, setAllNotes] = useState([]);
@@ -17,8 +17,16 @@ const Notes = () => {
     setSearchQuery(e.target.value);
   };
 
+  // Delete note
+  const handleDelete = (id) => {
+    const updatedNotes = allNotes.filter(note => note.id !== id);
+    setAllNotes(updatedNotes);
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+  };
+
   // Filter notes
   const filteredNotes = allNotes.filter(note =>
+    note?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     note?.content?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -48,26 +56,35 @@ const Notes = () => {
         {filteredNotes.map(note => (
           <div
             key={note.id}
-            className="p-4 bg-white border border-purple-200 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
+            className="p-4 bg-white border border-purple-200 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer relative"
           >
-            <h2 className="font-semibold text-lg text-purple-800 mb-2">Note</h2>
+            <h2 className="font-semibold text-lg text-purple-800 mb-2">{note.title || "Untitled"}</h2>
             <p className="text-sm text-purple-700">{note.content.slice(0, 100)}...</p>
+            
+            {/* Delete button */}
+            <button
+              onClick={() => handleDelete(note.id)}
+              className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+              title="Delete Note"
+            >
+              <FaTrash />
+            </button>
           </div>
         ))}
       </div>
 
-      {/* Add Note Button (INLINE instead of Floating) */}
+      {/* Add Note Button */}
       <Link
         to="/editor"
         className="w-16 max-w-md text-center bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-4xl shadow transition"
       >
-        + 
+        +
       </Link>
 
       <Button />
       <BottomNav />
     </div>
-  )
-}
+  );
+};
 
-export default Notes
+export default Notes;
