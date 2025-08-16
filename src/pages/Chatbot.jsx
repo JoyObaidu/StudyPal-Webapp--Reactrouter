@@ -1,7 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Button from "../components/Button";
 import BottomNav from "../components/Navbar";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
@@ -10,16 +12,41 @@ const Chatbot = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }); 
   const chatRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
-  if (!chatRef.current) {
-    chatRef.current = model.startChat({
-      history: [] // ✅ start empty; we'll handle greetings ourselves
-    });
-  }
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
+  // Auto-scroll
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Initialize chat automatically
+  const initializeChat = async () => {
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      chatRef.current = await model.startChat({
+        history: []
+      });
+
+      console.log("Chat initialized");
+    } catch (error) {
+      toast.error("Failed to initialize chatbot. Check your API key.");
+      console.error("Init error:", error);
+    }
+  };
+
+  useEffect(() => {
+    initializeChat();
+  }, []);
+
+  // Send message
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -30,7 +57,7 @@ const Chatbot = () => {
 
     try {
       const result = await chatRef.current.sendMessage(input.trim());
-      const botReply = result.response.text();
+      const botReply = result.response?.text() || "⚠️ No response.";
       setMessages((prev) => [...prev, { from: "bot", text: botReply }]);
     } catch (err) {
       console.error("Error:", err);
@@ -50,12 +77,26 @@ const Chatbot = () => {
     }
   };
 
+  const clearChat = () => {
+    setMessages([
+      { from: "bot", text: "Hi! I'm your AI assistant. Ask me anything!" }
+    ]);
+    initializeChat();
+    toast.info("Chat cleared");
+  };
+
   return (
     <div className="flex flex-col h-screen bg-purple-100">
       <Button />
 
-      <div className="p-8 flex justify-center items-center text-purple-800">
+      <div className="p-10 flex justify-between items-center text-purple-800 border-b border-purple-200">
         <h1 className="text-xl font-bold">Chatbot</h1>
+        <button
+          onClick={clearChat}
+          className="text-sm bg-purple-600 cursor-pointer text-white px-3 py-1 rounded"
+        >
+          Clear
+        </button>
       </div>
 
       {/* Chat area */}
@@ -75,10 +116,11 @@ const Chatbot = () => {
         {loading && (
           <div className="italic text-gray-500 mt-2">Bot is typing...</div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input area */}
-      <div className="p-4 flex gap-2 mb-16">
+      <div className="p-4 flex gap-2 mb-32">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -88,7 +130,8 @@ const Chatbot = () => {
         />
         <button
           onClick={handleSend}
-          className="bg-purple-800 text-white px-4 py-2 rounded hover:bg-purple-700 transition"
+          disabled={loading || !input.trim()}
+          className="bg-purple-900 cursor-pointer text-white px-4 py-2 rounded hover:bg-purple-600 transition"
         >
           Send
         </button>

@@ -4,91 +4,105 @@ import Button from '../components/Button';
 import { FaArrowRight, FaUser, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
-import { signOut, updateProfile } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { signOut, updateProfile, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [userProfile, setUserProfile] = useState({ name: '', email: '', bio: '' });
-  const [userPhoto, setUserPhoto] = useState('');
+  const [userProfile, setUserProfile] = useState({ name: 'Loading...', email: '', bio: '' });
+  const [userPhoto, setUserPhoto] = useState('/default-avatar.png');
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
   const [isNewUser, setIsNewUser] = useState(true);
   const [showUploadControls, setShowUploadControls] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         navigate('/signup');
         return;
       }
 
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      const userData = userDoc.exists() ? userDoc.data() : {};
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const userData = userDoc.exists() ? userDoc.data() : {};
 
-      const latestPhoto = user.photoURL || userData.photoURL || '';
-      if (latestPhoto) {
+        const latestPhoto = user.photoURL || userData.photoURL || '/default-avatar.png';
         setUserPhoto(latestPhoto);
+
+        setUserProfile({
+          name: user.displayName || 'Anonymous',
+          email: user.email || '',
+          bio: userData.bio || ''
+        });
+
+        setIsNewUser(latestPhoto === '/default-avatar.png');
+      } catch (error) {
+        toast.error('Failed to fetch user profile');
+        console.error('Error fetching user profile:', error);
       }
-
-      setUserProfile({
-        name: user.displayName || '',
-        email: user.email || '',
-        bio: userData.bio || ''
-      });
-
-      setIsNewUser(!latestPhoto);
     });
 
     return () => unsubscribe();
   }, [navigate]);
 
+  // ✅ handle image change (preview)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setUserPhoto(URL.createObjectURL(file)); // local preview
+      setUserPhoto(URL.createObjectURL(file)); // preview
     }
   };
 
+  // ✅ upload to Cloudinary and update Firestore/Auth
   const onSaveImage = async () => {
     if (!image) return;
 
     const user = auth.currentUser;
     if (!user) {
-      alert('You must be logged in to upload an image.');
+      toast.error('You must be logged in to upload an image.');
       return;
     }
 
+    setUploading(true);
     try {
-      setUploading(true);
-
       // Upload to Cloudinary
       const photoURL = await uploadImageToCloudinary(image);
 
-      // Update Firebase Auth & Firestore
+      // Update Firebase Auth profile
       await updateProfile(user, { photoURL });
-      await setDoc(doc(db, 'users', user.uid), { photoURL }, { merge: true });
 
+      // Update Firestore user doc
+      await updateDoc(doc(db, 'users', user.uid), { photoURL });
+
+      // Update local state
       setUserPhoto(photoURL);
       setShowUploadControls(false);
       setIsNewUser(false);
-      alert('Image uploaded and profile updated!');
+
+      toast.success('Image uploaded and profile updated!');
     } catch (err) {
+      toast.error('Upload failed. Try again.');
       console.error('Upload Error:', err);
-      alert('Upload failed. Try again.');
     } finally {
       setUploading(false);
     }
   };
 
+  // ✅ logout
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      toast.success('Logged out successfully');
       navigate('/signup');
     } catch (error) {
+      toast.error('Logout failed');
       console.error('Logout Error:', error);
+      console.log(import.meta.env.MODE); 
     }
   };
 
@@ -98,9 +112,10 @@ const Profile = () => {
       <h1 className="text-3xl font-bold text-purple-950 mt-8 mb-4">My Profile</h1>
 
       <div className="w-full max-w-md p-6 flex flex-col items-center">
+        {/* Profile Photo */}
         <div className="w-28 h-28 rounded-full overflow-hidden shadow border-4 border-purple-300 mb-4">
           <img
-            src={userPhoto || '/default-avatar.png'}
+            src={userPhoto}
             onError={(e) => (e.currentTarget.src = '/default-avatar.png')}
             alt="User"
             className="w-full h-full object-cover"
@@ -116,11 +131,16 @@ const Profile = () => {
 
         {showUploadControls && (
           <>
-            <input type="file" accept="image/*" onChange={handleImageChange} className="mb-3" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="mb-3"
+            />
             {image && (
               <button
                 onClick={onSaveImage}
-                className="bg-purple-700 text-white px-4 py-2 rounded-lg"
+                className="bg-purple-700 text-white px-4 py-2 rounded-lg mb-3"
                 disabled={uploading}
               >
                 {uploading ? 'Uploading...' : 'Save Image'}
@@ -129,10 +149,12 @@ const Profile = () => {
           </>
         )}
 
+        {/* User info */}
         <h2 className="text-2xl font-bold text-black mb-1">{userProfile.name}</h2>
-        <p className="text-black mb-6">{userProfile.email}</p>
-        <p className="text-black mb-6">{userProfile.bio}</p>
+        <p className="text-black mb-2">{userProfile.email}</p>
+        <p className="text-black mb-6 text-center">{userProfile.bio || 'No bio available'}</p>
 
+        {/* Actions */}
         <div className="w-full space-y-3">
           <Link
             to="/editprofile"
