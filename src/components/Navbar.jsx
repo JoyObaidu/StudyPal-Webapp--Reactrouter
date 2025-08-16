@@ -11,7 +11,7 @@ const BottomNav = () => {
     { path: '/pomodoro', type: 'icon', icon: FaClock, label: 'Pomodoro' },
     { path: '/chatbot', type: 'icon', icon: FaRobot, label: 'Chatbot' },
     { path: '/profile', type: 'icon', icon: FaUser, label: 'Profile' },
-    { path: '/settings', type: 'icon', icon: FaCog, label: 'Settings' }
+    // { path: '/settings', type: 'icon', icon: FaCog, label: 'Settings' }
   ];
 
   return (

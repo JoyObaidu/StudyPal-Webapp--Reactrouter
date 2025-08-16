@@ -1,3 +1,4 @@
+// ✅ Updated Profile.jsx
 import React, { useState, useEffect } from 'react';
 import BottomNav from '../components/Navbar';
 import Button from '../components/Button';
@@ -5,7 +6,7 @@ import { FaArrowRight, FaUser, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
 import { signOut, updateProfile, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -76,8 +77,16 @@ const Profile = () => {
       // Update Firebase Auth profile
       await updateProfile(user, { photoURL });
 
-      // Update Firestore user doc
-      await updateDoc(doc(db, 'users', user.uid), { photoURL });
+      // ✅ FIX: merge instead of overwrite
+      await setDoc(
+        doc(db, 'users', user.uid),
+        {
+          photoURL,
+          email: user.email,
+          displayName: user.displayName || 'Anonymous',
+        },
+        { merge: true }
+      );
 
       // Update local state
       setUserPhoto(photoURL);
