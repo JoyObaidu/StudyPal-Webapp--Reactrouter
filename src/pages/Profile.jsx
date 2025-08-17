@@ -10,6 +10,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Footer from '../components/Footer';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -191,7 +192,6 @@ const Profile = () => {
           </button>
         </div>
       </div>
-
       <BottomNav />
     </div>
   );

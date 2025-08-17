@@ -3,6 +3,7 @@ import { FaSearch, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/Navbar';
 import Button from '../components/Button';
+import Footer from '../components/Footer';
 
 const Notes = () => {
   const [allNotes, setAllNotes] = useState([]);
@@ -83,6 +84,7 @@ const Notes = () => {
 
       <Button />
       <BottomNav />
+
     </div>
   );
 };

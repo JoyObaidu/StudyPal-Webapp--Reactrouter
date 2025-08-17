@@ -35,6 +35,8 @@ const Welcome = () => {
         <h1 className="text-5xl font-extrabold text-white">STUDYPAL</h1>
         <p className="mt-4 text-sm opacity-70">Your personal AI study companion</p>
       </div>
+
+      
     </div>
     </>
    

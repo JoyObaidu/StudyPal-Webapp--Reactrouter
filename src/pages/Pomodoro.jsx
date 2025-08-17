@@ -3,6 +3,7 @@ import BottomNav from '../components/Navbar';
 import Button from '../components/Button';
 import headerImage from '../assets/POMODORO _ Okamoto Issen Graphic Design Co_,Ltd_ 1.png';
 import alarmSound from '../assets/mixkit-alarm-digital-clock-beep-989.wav'; 
+import Footer from '../components/Footer';
 
 const Pomodoro = () => {
   const WORK_TIME = 1500; // 25 min
@@ -140,7 +141,6 @@ const Pomodoro = () => {
           Reset
         </button>
       </div>
-
       <BottomNav />
     </div>
   );

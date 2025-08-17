@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const Editor = () => {
   const navigate = useNavigate();
@@ -63,7 +64,6 @@ const Editor = () => {
           Save Note
         </button>
       </div>
-
       <BottomNav />
     </div>
   );

@@ -9,6 +9,7 @@ import {
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import googleImg from '../assets/icons8-google.svg';
+import Footer from '../components/Footer';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -71,7 +72,8 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-300 via-purple-400 to-purple-500 px-4">
+    <>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-300 via-purple-400 to-purple-500 px-4">
       <div className="w-full max-w-md p-8">
         <h2 className="text-3xl font-bold text-center text-purple-800 mb-6">
           {isSignUp ? 'Create an Account' : 'Welcome Back'}
@@ -169,8 +171,11 @@ const SignUp = () => {
           </button>
         </p>
       </div>
+      <Footer />
     </div>
+    
+    </>
   );
-};
+}
 
 export default SignUp;
