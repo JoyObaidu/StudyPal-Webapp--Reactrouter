@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/Navbar';
 import { auth, db } from '../firebaseConfig';
 import { updateProfile } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 
@@ -40,39 +40,45 @@ const EditProfile = () => {
   }, [navigate]);
 
   const handleSave = async () => {
-    if (!fullName.trim()) {
-      toast.error('Name cannot be empty');
+  if (!fullName.trim()) {
+    toast.error('Name cannot be empty');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      toast.error('No signed-in user.');
       return;
     }
 
-    setLoading(true);
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        toast.error('No signed-in user.');
-        return;
-      }
+    // Update Firebase Auth profile
+    await updateProfile(user, {
+      displayName: fullName,
+    });
 
-      // 更新 Firebase Auth 中的显示名称
-      await updateProfile(user, {
-        displayName: fullName,
-      });
-
-      // 更新 Firestore 中的用户数据
-      await updateDoc(doc(db, 'users', user.uid), {
+    // Firestore doc
+    await setDoc(
+      doc(db, 'users', user.uid),
+      {
         displayName: fullName,
         bio: bio,
-      });
+        email: user.email, // good to store email for consistency
+      },
+      { merge: true } // merge ensures we don’t overwrite other fields
+    );
 
-      toast.success('Profile updated successfully');
-      navigate("/profile");
-    } catch (error) {
-      toast.error('Error updating profile');
-      console.error('Error updating profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success('Profile updated successfully');
+    navigate("/profile");
+  } catch (error) {
+    toast.error('Error updating profile');
+    console.error('Error updating profile:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-200 text-black flex flex-col justify-between">

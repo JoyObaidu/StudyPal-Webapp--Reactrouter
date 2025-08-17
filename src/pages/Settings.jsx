@@ -5,7 +5,7 @@ import { FaArrowRight, FaUser, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { signOut, updateProfile } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { uploadImageToCloudinary } from "../lib/cloudinaryUpload";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -72,7 +72,7 @@ const Profile = () => {
     try {
       const photoURL = await uploadImageToCloudinary(image);
       await updateProfile(user, { photoURL });
-      await updateDoc(doc(db, "users", user.uid), { photoURL });
+      await setDoc(doc(db, "users", user.uid), { photoURL });
       setUserPhoto(photoURL);
       setShowUploadControls(false);
       setIsNewUser(false);
