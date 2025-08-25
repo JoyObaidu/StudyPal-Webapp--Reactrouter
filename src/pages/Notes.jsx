@@ -58,7 +58,8 @@ const Notes = () => {
           <p className="text-purple-500 text-center w-full">No notes found.</p>
         )}
         {filteredNotes.map(note => (
-          <div
+          <Link
+            to={`/editor/${note.id}`} 
             key={note.id}
             className="p-4 bg-white border border-purple-200 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer relative"
           >
@@ -67,13 +68,16 @@ const Notes = () => {
             
             {/* Delete button */}
             <button
-              onClick={() => handleDelete(note.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleDelete(note.id);
+              }}
               className="absolute top-3 right-3 text-red-500 hover:text-red-700"
               title="Delete Note"
             >
               <FaTrash />
             </button>
-          </div>
+          </Link>
         ))}
       </div>
 

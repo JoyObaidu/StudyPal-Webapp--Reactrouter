@@ -21,6 +21,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path='/notes' element={<Notes/>} />
         <Route path="/editor" element={<Editor />} />
+        <Route path="/editor/:id" element={<Editor />} />
         <Route path="/pomodoro" element={<Pomodoro />} />
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/profile" element={<Profile />} />

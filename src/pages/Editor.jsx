@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../components/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import BottomNav from '../components/Navbar';
-import Footer from '../components/Footer';
-
 
 const Editor = () => {
   const navigate = useNavigate();
-  const [noteTitle, setNoteTitle] = React.useState(''); // New title state
-  const [noteContent, setNoteContent] = React.useState('');
-  const [existingNotes, setExistingNotes] = React.useState(() => {
+  const { id } = useParams();
+
+  const [noteTitle, setNoteTitle] = useState('');
+  const [noteContent, setNoteContent] = useState('');
+  const [existingNotes, setExistingNotes] = useState([]);
+
+  // Load notes + prefill if editing
+  useEffect(() => {
     if (typeof window !== 'undefined') {
-      const notes = window.localStorage.getItem('notes');
-      return notes ? JSON.parse(notes) : [];
+      const notes = JSON.parse(localStorage.getItem('notes')) || [];
+      setExistingNotes(notes);
+
+      if (id) {
+        const noteToEdit = notes.find(n => n.id === Number(id));
+        if (noteToEdit) {
+          setNoteTitle(noteToEdit.title);
+          setNoteContent(noteToEdit.content);
+        }
+      }
     }
-    return [];
-  });
+  }, [id]);
 
   const handleSave = () => {
     if (noteTitle.trim() === '' || noteContent.trim() === '') {
@@ -23,15 +33,26 @@ const Editor = () => {
       return;
     }
 
-    if (typeof window !== 'undefined') {
-      const updatedNotes = [
+    let updatedNotes;
+
+    if (id) {
+      // Editing an existing note
+      updatedNotes = existingNotes.map(note =>
+        note.id === Number(id)
+          ? { ...note, title: noteTitle, content: noteContent }
+          : note
+      );
+    } else {
+      // Creating a new note
+      updatedNotes = [
         ...existingNotes,
         { id: Date.now(), title: noteTitle, content: noteContent },
       ];
-      window.localStorage.setItem('notes', JSON.stringify(updatedNotes));
-      setExistingNotes(updatedNotes);
-      navigate('/notes');
     }
+
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+    setExistingNotes(updatedNotes);
+    navigate('/notes');
   };
 
   return (
@@ -39,7 +60,9 @@ const Editor = () => {
       <Button />
 
       <div className="w-full max-w-2xl bg-white shadow-xl border border-purple-200 rounded-xl mt-10 p-6">
-        <h1 className="text-2xl font-bold text-purple-800 mb-4">New Note</h1>
+        <h1 className="text-2xl font-bold text-purple-800 mb-4">
+          {id ? 'Edit Note' : 'New Note'}
+        </h1>
 
         {/* Title Input */}
         <input
@@ -62,7 +85,7 @@ const Editor = () => {
           onClick={handleSave}
           className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
         >
-          Save Note
+          {id ? 'Update Note' : 'Save Note'}
         </button>
       </div>
       <BottomNav />
