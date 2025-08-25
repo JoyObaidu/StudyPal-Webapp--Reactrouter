@@ -16,7 +16,7 @@ const Welcome = () => {
 
   return (
     <>
-     <div className="absolute w-full inset-0 bg-opacity-10 z-4" />
+     <div className="absolute w-full bg-purple-400 inset-0 bg-opacity-10 z-4" />
     <div
       className="relative h-screen w-full bg-cover opacity-45 bg-center z-5"
       style={{ backgroundImage: `url(${hero})` }}

@@ -5,9 +5,12 @@ import BottomNav from '../components/Navbar';
 import Button from '../components/Button';
 import Footer from '../components/Footer';
 
+
 const Notes = () => {
   const [allNotes, setAllNotes] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+
 
   useEffect(() => {
     const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/Navbar';
 import Footer from '../components/Footer';
 
+
 const Editor = () => {
   const navigate = useNavigate();
   const [noteTitle, setNoteTitle] = React.useState(''); // New title state

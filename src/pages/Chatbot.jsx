@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Chatbot = () => {
+  
   const [messages, setMessages] = useState([
     { from: "bot", text: "Hi! I'm your AI assistant. Ask me anything!" }
   ]);
@@ -24,6 +25,7 @@ const Chatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
 
   // Initialize chat automatically
   const initializeChat = async () => {
